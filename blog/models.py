@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ModelForm
 
 class Author(models.Model):
     name = models.CharField(max_length=50)
@@ -21,3 +22,8 @@ class comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     com_text = models.TextField()
     pub_date = models.DateField()
+
+class BlogForm(ModelForm):
+    class Meta:
+        model = Blog
+        fields = [ 'title', 'body_text']
