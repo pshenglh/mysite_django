@@ -7,6 +7,8 @@
 <body>
 <h1>{{ blog.title }}</h1>
 <p>{{ blog.body_text }}</p>
-<p>{{ blog.mod_date }}</p>
+<p>{{ blog.mod_date }}</p><br>
+<a href="{% url 'delete' blog.id %}">删除</a>
+<a href="{% url 'edit' blog.id %}">编辑</a>
 </body>
 </html>

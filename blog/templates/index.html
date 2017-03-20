@@ -6,7 +6,9 @@
 </head>
 <body>
 {% for blog in blogs %}
-    <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a>
+    <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a><br>
 {% endfor %}
+<hr>
+<a href="{% url 'add_blog' %}">写文章</a>
 </body>
 </html>
