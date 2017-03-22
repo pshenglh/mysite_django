@@ -5,8 +5,9 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from .forms import LoginForm, SignUpForm
+from guardian.shortcuts import assign_perm, get_user_perms
 
 
 # 首页处理视图函数
@@ -20,6 +21,7 @@ def detail(request, blog_id):
     return render(request, 'detail.html', {'blog':blog})
 
 #写文章
+#@permission_required('blog.add_blog', login_url='/login/')
 def add_blog(request):
     if request.method == 'POST':
         form = BlogForm(request.POST)
@@ -29,8 +31,11 @@ def add_blog(request):
                      body_text=form.cleaned_data['body_text'],
                      pub_date=timezone.now(),
                      mod_date=timezone.now(),
-                     author=User.objects.get(pk=1))
+                     author=request.user)
             blog.save()
+            #为新添加的文章分配修改和删除权限
+            assign_perm('change_blog', request.user, blog)
+            assign_perm('delete_blog', request.user, blog)
             return redirect('index')
     else:
         form = BlogForm()
@@ -40,29 +45,36 @@ def add_blog(request):
 #删除文章
 def delete_blog(request, blog_id):
     blog = Blog.objects.get(pk=blog_id)
-    blog.delete()
-    return redirect('index')
+    if request.user.has_perm('delete_blog', blog):
+        blog.delete()
+        return redirect('index')
+    else:
+        return HttpResponse('Permission denied!')
 
 #编辑文章
 def edit_blog(request, blog_id):
     blog = Blog.objects.get(pk=blog_id)
-    data = {
-        'title': blog.title,
-        'body_text': blog.body_text
-    }
-    if request.method == 'POST':
-        form = BlogForm(request.POST)
-        if form.is_valid():
-            #修改该文章被修改的部分并将提交的数据保存到数据库中
-            blog.title = form.cleaned_data['title']
-            blog.body_text = form.cleaned_data['body_text']
-            blog.mod_date = timezone.now()
-            blog.save()
-            return redirect('index')
-    else:
-        form = BlogForm(data)
+    #测试对文章实例的修改权限
+    if request.user.has_perm('change_blog', blog):
+        data = {
+            'title': blog.title,
+            'body_text': blog.body_text
+        }
+        if request.method == 'POST':
+            form = BlogForm(request.POST)
+            if form.is_valid():
+                #修改该文章被修改的部分并将提交的数据保存到数据库中
+                blog.title = form.cleaned_data['title']
+                blog.body_text = form.cleaned_data['body_text']
+                blog.mod_date = timezone.now()
+                blog.save()
+                return redirect('index')
+        else:
+            form = BlogForm(data)
 
-    return render(request, 'add_blog.html', {'form':form})
+        return render(request, 'add_blog.html', {'form':form})
+    else:
+        return HttpResponse('Don\'t have the permission!')
 
 #登录
 def my_login(request):
@@ -72,6 +84,8 @@ def my_login(request):
         user = authenticate(username = username, password = password)
         if user is not None:
             login(request, user)
+            blog = Blog.objects.filter(author_id=user.id)
+            print(get_user_perms(user, blog[0]))
             return HttpResponse(request.user.username)
         else:
             return HttpResponse('ERROR')
@@ -97,8 +111,10 @@ def sign_up(request):
                 form.cleaned_data['password']
             )
             user.save()
+            user.permissions.add('blog.add_blog')
             return HttpResponse('Sign up success!')
     else:
         form = SignUpForm()
 
     return render(request, 'sign_up.html', {'form':form})
+

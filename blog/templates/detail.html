@@ -10,5 +10,6 @@
 <p>{{ blog.mod_date }}</p><br>
 <a href="{% url 'delete' blog.id %}">删除</a>
 <a href="{% url 'edit' blog.id %}">编辑</a>
+<p>{{ blog.author.username }}</p>
 </body>
 </html>
