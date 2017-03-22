@@ -84,8 +84,6 @@ def my_login(request):
         user = authenticate(username = username, password = password)
         if user is not None:
             login(request, user)
-            blog = Blog.objects.filter(author_id=user.id)
-            print(get_user_perms(user, blog[0]))
             return HttpResponse(request.user.username)
         else:
             return HttpResponse('ERROR')

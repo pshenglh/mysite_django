@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Index</title>
-</head>
-<body>
-{% for blog in blogs %}
-    <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a><br>
-{% endfor %}
+{% extends "base.html" %}
+
+{% block title %}首页{% endblock %}
+
+{% block body %}
+  <div class="container">
+    {% for blog in blogs %}
+      <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a><br>
+    {% endfor %}
+  </div>
 <hr>
 <a href="{% url 'add_blog' %}">写文章</a>
-</body>
-</html>
+{% endblock %}
