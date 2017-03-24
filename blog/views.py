@@ -72,7 +72,7 @@ def edit_blog(request, blog_id):
         else:
             form = BlogForm(data)
 
-        return render(request, 'add_blog.html', {'form':form})
+        return render(request, 'edit_blog.html', {'form':form, 'blog':blog})
     else:
         return HttpResponse('Don\'t have the permission!')
 
@@ -116,3 +116,20 @@ def sign_up(request):
 
     return render(request, 'sign_up.html', {'form':form})
 
+class UserDetail(object):
+
+    def __init__(self, user_id):
+        self.id = user_id
+
+    def blog_set(self):
+        blog_set = Blog.objects.filter(author_id=self.id).order_by('-pub_date')
+        return blog_set
+
+    def blog_num(self):
+        blog_set = self.blog_set()
+        blog_num = len(blog_set)
+        return blog_num
+
+def user_detail(request, user_id):
+    user_detail = UserDetail(user_id)
+    return render(request, 'user_detail.html', {'user_detail':user_detail})

@@ -3,11 +3,33 @@
 {% block title %}首页{% endblock %}
 
 {% block body %}
+
   <div class="container">
+
+  <div class="row">
+    <div class="col-md-8">
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="#">Profile</a></li>
+        <li role="presentation"><a href="#">Messages</a></li>
+      </ul>
+
     {% for blog in blogs %}
-      <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a><br>
+    <div class="media">
+      <div class="media-left">
+        <a href="#">
+          <img class="media-object" src="..." alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">Media heading</h4>
+        <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a>
+      </div>
+      <hr>
+    </div>
     {% endfor %}
+    </div>
   </div>
-<hr>
-<a href="{% url 'add_blog' %}">写文章</a>
+  </div>
+
 {% endblock %}
