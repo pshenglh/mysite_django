@@ -9,3 +9,7 @@ class SignUpForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(label='密码', max_length=30)
     password1 = forms.CharField(label='确认密码', max_length=30)
+
+class BlogForm(forms.Form):
+    title = forms.CharField(label='标题', max_length=50)
+    body_text = forms.Textarea()

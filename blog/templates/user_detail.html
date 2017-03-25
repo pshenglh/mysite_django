@@ -5,8 +5,15 @@
   <title>Detail</title>
 </head>
 <body>
+<a href="{% url 'follow' user_detail.id %}">关注</a>
 {% for blog in user_detail.blog_set %}
   <p>{{ blog.title }}</p>
+{% endfor %}
+{% for follow in user_detail.followed %}
+  <p>{{ follow.username }}</p><hr>
+{% endfor %}
+{% for follower in user_detail.follower %}
+  <p>{{ follower.username }}</p>
 {% endfor %}
 </body>
 </html>

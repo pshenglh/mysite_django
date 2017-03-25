@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from .models import Blog, BlogForm
+from .models import Blog, Relatinship
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm, BlogForm
 from guardian.shortcuts import assign_perm, get_user_perms
 
 
@@ -117,6 +117,9 @@ def sign_up(request):
     return render(request, 'sign_up.html', {'form':form})
 
 class UserDetail(object):
+    '''
+    用户详细信息的类，根据实例化时传入的id查询文章信息和关注信息
+    '''
 
     def __init__(self, user_id):
         self.id = user_id
@@ -130,6 +133,41 @@ class UserDetail(object):
         blog_num = len(blog_set)
         return blog_num
 
+    def followed(self):
+        relationship_set = Relatinship.objects.filter(follower_id=self.id)
+        followed_set = []
+        for relationship in relationship_set:
+            followed_set.append(User.objects.get(id=relationship.followed_id))
+        return followed_set
+
+    def follower(self):
+        relationship_set = Relatinship.objects.filter(followed_id=self.id)
+        follower_set = []
+        for relationship in relationship_set:
+            follower_set.append(User.objects.get(id=relationship.follower_id))
+        return follower_set
+
 def user_detail(request, user_id):
     user_detail = UserDetail(user_id)
     return render(request, 'user_detail.html', {'user_detail':user_detail})
+
+#关注他人
+def follow_to(request, user_id):
+    #在数据库中获取登录者的关系表
+    relationship_exist_set = Relatinship.objects.filter(followed_id=request.user.id)
+    follower = []
+    for relationship_exist in relationship_exist_set:
+        user = User.objects.get(id=relationship_exist.follower_id)
+        follower.append(user.id)
+    #检查是否已关注目标，若没关注这添加关注关系到数据库中
+    #若已关注则返回提示
+    if int(user_id) not in follower:
+        relationship = Relatinship(
+            followed=request.user,
+            follower=User.objects.get(id=user_id)
+        )
+        relationship.save()
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('Already followed')
+

@@ -12,13 +12,12 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
 
-class comment(models.Model):
+class Comment(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     com_text = models.TextField()
     pub_date = models.DateField()
 
-class BlogForm(ModelForm):
-    class Meta:
-        model = Blog
-        fields = [ 'title', 'body_text']
+class Relatinship(models.Model):
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
