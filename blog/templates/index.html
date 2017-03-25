@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}首页{% endblock %}
 
@@ -8,22 +9,16 @@
 
   <div class="row">
     <div class="col-md-8">
-      <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="#">Profile</a></li>
-        <li role="presentation"><a href="#">Messages</a></li>
-      </ul>
-
     {% for blog in blogs %}
     <div class="media">
       <div class="media-left">
         <a href="#">
-          <img class="media-object" src="..." alt="...">
+          <img class="media-object" src="{% static 'pic/userheadpic/defaultuser.png' %}" alt="">
         </a>
       </div>
       <div class="media-body">
-        <h4 class="media-heading">Media heading</h4>
-        <a href="{% url 'detail' blog.id %}">{{ blog.title }}</a>
+        <h4 class="media-heading">{{ blog.title }}</h4>
+        <a href="{% url 'detail' blog.id %}">{{ blog.body_text }}</a>
       </div>
       <hr>
     </div>

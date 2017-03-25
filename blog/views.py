@@ -84,7 +84,7 @@ def my_login(request):
         user = authenticate(username = username, password = password)
         if user is not None:
             login(request, user)
-            return HttpResponse(request.user.username)
+            return redirect('index')
         else:
             return HttpResponse('ERROR')
     else:
@@ -93,9 +93,10 @@ def my_login(request):
     return render(request, 'login.html', {'form':form})
 
 #登出
+@login_required()
 def my_logout(request):
     logout(request)
-    return HttpResponse('logout success')
+    return redirect('index')
 
 #注册
 def sign_up(request):
@@ -127,11 +128,6 @@ class UserDetail(object):
     def blog_set(self):
         blog_set = Blog.objects.filter(author_id=self.id).order_by('-pub_date')
         return blog_set
-
-    def blog_num(self):
-        blog_set = self.blog_set()
-        blog_num = len(blog_set)
-        return blog_num
 
     def followed(self):
         relationship_set = Relatinship.objects.filter(follower_id=self.id)
