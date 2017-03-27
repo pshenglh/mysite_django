@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect
 from .models import Blog, Relatinship
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
 from .forms import LoginForm, SignUpForm, BlogForm
-from guardian.shortcuts import assign_perm, get_user_perms
-
+from guardian.shortcuts import assign_perm
 
 # 首页处理视图函数
 def index(request):
@@ -21,7 +20,7 @@ def detail(request, blog_id):
     return render(request, 'detail.html', {'blog':blog})
 
 #写文章
-#@permission_required('blog.add_blog', login_url='/login/')
+@permission_required('blog.add_blog', login_url='/login/')
 def add_blog(request):
     if request.method == 'POST':
         form = BlogForm(request.POST)
@@ -86,7 +85,8 @@ def my_login(request):
             login(request, user)
             return redirect('index')
         else:
-            return HttpResponse('ERROR')
+            form = LoginForm(request.POST)
+            return render(request, 'login.html', {'from':form, 'password_is_wrong':True})
     else:
         form = LoginForm()
 
@@ -110,8 +110,14 @@ def sign_up(request):
                 form.cleaned_data['password']
             )
             user.save()
-            user.permissions.add('blog.add_blog')
-            return HttpResponse('Sign up success!')
+            permission = Permission.objects.get(codename='add_blog')
+            user.user_permissions.add(permission)
+            return render(request, 'login.html')
+        elif not form.is_valid():
+            return render(request, 'sign_up.html', {'form': form, 'not_valiton': True})
+        else:
+            return render(request, 'sign_up.html', {'form':form, 'password_not_same':True})
+
     else:
         form = SignUpForm()
 

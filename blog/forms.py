@@ -1,8 +1,10 @@
 from django import forms
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label='用户名', max_length=40)
-    password = forms.CharField(label='密码', max_length=30)
+    username = forms.CharField(label='用户名', max_length=40,
+                               required=True, error_messages={'required':'请输入用户名'})
+    password = forms.CharField(label='密码', max_length=30,
+                               required=True, error_messages={'required':'请输入密码'})
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=40)
