@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from .models import Blog, Relatinship
+from .models import Blog, Relatinship, Comment
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
-from .forms import LoginForm, SignUpForm, BlogForm
+from .forms import LoginForm, SignUpForm, BlogForm, CommentForm
 from guardian.shortcuts import assign_perm
 
 # 首页处理视图函数
@@ -74,6 +74,24 @@ def edit_blog(request, blog_id):
         return render(request, 'edit_blog.html', {'form':form, 'blog':blog})
     else:
         return HttpResponse('Don\'t have the permission!')
+
+#发表评论
+def comment(request, blog_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = Comment(
+                blog=Blog.objects.get(pk=blog_id),
+                author=request.user,
+                com_text=form.cleaned_data['com_text'],
+                pub_date=timezone.now()
+            )
+            comment.save()
+            return redirect('index')
+        else:
+            return redirect('index')
+    else:
+        return redirect('index')
 
 #登录
 def my_login(request):

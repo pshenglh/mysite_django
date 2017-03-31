@@ -15,3 +15,6 @@ class SignUpForm(forms.Form):
 class BlogForm(forms.Form):
     title = forms.CharField(label='标题', max_length=50)
     body_text = forms.Textarea()
+
+class CommentForm(forms.Form):
+    com_text = forms.CharField(label='评论')

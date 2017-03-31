@@ -20,10 +20,51 @@
         <h4 class="media-heading">{{ blog.title }}</h4>
         <a href="{% url 'detail' blog.id %}">{{ blog.body_text }}</a>
       </div>
-      <hr>
     </div>
+      <button type="button" class="btn btn-default" data-toggle="collapse"
+          data-target="#{{ blog.id }}">
+          评论
+      </button>
+      <div id="{{ blog.id }}" class="collapse">
+        {% for comment in blog.get_comment %}
+          {{ comment.com_text }}<hr>
+        {% endfor %}
+        <form action="{% url 'comment' blog.id %}" class="form-write" method="post">
+          {% csrf_token %}
+          <div class="input-group">
+            <input type="text" class="form-control" name="com_text" placeholder="评论">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">提交</button>
+            </span>
+          </div>
+        </form>
+
+      </div>
+      <hr>
     {% endfor %}
     </div>
+     <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About</h4>
+            <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+          </div>
+          <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+              {% for blog in blogs %}
+                <li><a href="#">{{ blog.title }}</a></li>
+              {% endfor %}
+            </ol>
+          </div>
+          <div class="sidebar-module">
+            <h4>Elsewhere</h4>
+            <ol class="list-unstyled">
+              <li><a href="#">GitHub</a></li>
+              <li><a href="#">Twitter</a></li>
+              <li><a href="#">Facebook</a></li>
+            </ol>
+          </div>
+        </div><!-- /.blog-sidebar -->
   </div>
   </div>
 

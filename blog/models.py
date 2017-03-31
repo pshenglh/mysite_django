@@ -9,6 +9,11 @@ class Blog(models.Model):
     mod_date = models.DateField()
     body_text = models.TextField()
 
+    def get_comment(self):
+        id = self.id
+        comments = Comment.objects.filter(blog_id=id)
+        return comments
+
     def __str__(self):
         return self.title
 

@@ -4,32 +4,39 @@
 {% block title %}详细内容{% endblock %}
 
 {% block body %}
-
     <div class="container">
-      <!--
-      <div class="blog-header">
-        <h1 class="blog-title">The Bootstrap Blog</h1>
-        <p class="lead blog-description">The official example template of creating a blog with Bootstrap.</p>
-      </div>-->
-
       <div class="row">
-
         <div class="col-sm-8 blog-main">
-
           <div class="blog-post">
             <h2 class="blog-post-title">{{ blog.title }}</h2>
             <p class="blog-post-meta">{{ blog.pub_date }} by <a href="{% url 'user_detail' blog.author_id %}">{{ blog.author }}</a></p>
               <p>{{ blog.body_text }}</p>
           </div><!-- /.blog-post -->
-
-            <ul class="pager">
-
-              <li><a href="#">Previous</a></li>
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              操作
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#">评论</a></li>
               {% get_obj_perms request.user for blog as "blog_perm" %}
               {% if "change_blog" in blog_perm %}
                 <li><a href="{% url 'edit' blog.id %}">编辑</a></li>
               {% endif %}
-              <li><a href="#">Next</a></li>
+              {% if "delete_blog" in blog_perm %}
+                <li><a href="" data-toggle="modal" data-target="#myModal">删除</a></li>
+              {% endif %}
+            </ul>
+          </div>
+
+            <ul class="pager">
+
+             <!--<li><a href="#">Previous</a></li>
+              {% get_obj_perms request.user for blog as "blog_perm" %}
+              {% if "change_blog" in blog_perm %}
+                <li><a href="{% url 'edit' blog.id %}">编辑</a></li>
+              {% endif %}
+              <li><a href="#">Next</a></li>-->
             </ul>
 
         </div><!-- /.blog-main -->
@@ -68,13 +75,23 @@
       </div><!-- /.row -->
 
     </div><!-- /.container -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">删除文章</h4>
+          </div>
+          <div class="modal-body">确认删除该文章？</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">放弃</button>
+              <a class="btn btn-primary" href="{%  url 'delete' blog.id %}" role="button">删除</a>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
 {% endblock %}
